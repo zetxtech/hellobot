@@ -34,7 +34,7 @@ def lambda_handler(event, context):
             
             full_content = "\n".join(parts)
             
-            processed_key = f"{task_id}/Hello-{original_filename}"
+            processed_key = f"{task_id}/{original_filename}"
             s3_client.put_object(
                 Bucket=PROCESSED_INDIVIDUAL_BUCKET,
                 Key=processed_key,
