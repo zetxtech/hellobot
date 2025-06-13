@@ -16,8 +16,8 @@ The entire system is event-driven. Core components are decoupled via S3 events a
 
 You can find the source code for all Lambda functions in the `aws/lambdas` directory of this project.
 
-\<details\>
-\<summary\>Click to expand/collapse the Mini Architecture Diagram\</summary\>
+<details>
+<summary>Click to expand/collapse the Mini Architecture Diagram</summary>
 
 ```mermaid
 graph LR
@@ -68,7 +68,7 @@ graph LR
     class Error error;
 ```
 
-\</details\>
+</details>
 
 **The main processing flow is as follows:**
 
@@ -83,8 +83,8 @@ graph LR
 
 The following diagram provides a detailed blueprint of all service components, triggers, and data flows, suitable for development and operational reference.
 
-\<details\>
-\<summary\>Click to expand/collapse the Complete Architecture Diagram\</summary\>
+<details>
+<summary>Click to expand/collapse the Complete Architecture Diagram</summary>
 
 ```mermaid
 graph TD
@@ -181,7 +181,7 @@ graph TD
     end
 ```
 
-\</details\>
+</details>
 
 ## Frontend
 
