@@ -100,7 +100,7 @@ graph TD
     %% Main State Store
     DynamoDB["<fa:fa-table> DynamoDB Table<br><i>(Tasks & Status)</i>"]:::db
 
-    subgraph "1. API Layer & User Interaction"
+    subgraph "1\. API Layer & User Interaction"
         direction TB
         User["<fa:fa-user> Client/User"]:::user
         APIGW["<fa:fa-server> HellobotAPI<br>(API Gateway)"]:::api
@@ -114,9 +114,9 @@ graph TD
         
         User -- "POST /get-upload-url" --> APIGW
         APIGW --> L_GetUpload
-        L_GetUpload -- "1. Creates 'PENDING' task" --> DynamoDB
-        L_GetUpload -- "2. Returns S3 Presigned URL" --> APIGW
-        User -- "3. Uploads file via URL" --> S3_Upload
+        L_GetUpload -- "1\. Creates 'PENDING' task" --> DynamoDB
+        L_GetUpload -- "2\. Returns S3 Presigned URL" --> APIGW
+        User -- "3\. Uploads file via URL" --> S3_Upload
 
         User -- "GET /get-job-status" --> APIGW
         APIGW --> L_GetStatus
@@ -126,7 +126,7 @@ graph TD
         APIGW --> L_CreateZip
     end
     
-    subgraph "2. Asynchronous Processing Pipeline"
+    subgraph "2\. Asynchronous Processing Pipeline"
         direction TB
         S3_Upload["<fa:fa-database> UPLOAD_BUCKET<br><i>(Raw user files)</i>"]:::s3
         L_Orchestrator["<fa:fa-bolt> FileOrchestrator"]:::lambda
@@ -134,35 +134,35 @@ graph TD
         L_Processor["<fa:fa-bolt> ChunkProcessor"]:::lambda
         S3_Parts["<fa:fa-database> PROCESSED_PARTS_BUCKET<br><i>(Temporary processed chunks)</i>"]:::s3
 
-        S3_Upload -- "4. S3 ObjectCreated Trigger" --> L_Orchestrator
+        S3_Upload -- "4\. S3 ObjectCreated Trigger" --> L_Orchestrator
         L_Orchestrator -- "Reads metadata" --> S3_Upload
-        L_Orchestrator -- "5. Updates task to 'PROCESSING'" --> DynamoDB
-        L_Orchestrator -- "6. Sends messages for each chunk" --> SQS_Queue
-        SQS_Queue -- "7. SQS Trigger (in batches)" --> L_Processor
+        L_Orchestrator -- "5\. Updates task to 'PROCESSING'" --> DynamoDB
+        L_Orchestrator -- "6\. Sends messages for each chunk" --> SQS_Queue
+        SQS_Queue -- "7\. SQS Trigger (in batches)" --> L_Processor
         L_Processor -- "Reads byte-range from" --> S3_Upload
-        L_Processor -- "8. Writes processed part to" --> S3_Parts
-        L_Processor -- "9. Increments completedChunks in" --> DynamoDB
-        L_Processor -- "10. On completion, invokes..." --> L_Packager
+        L_Processor -- "8\. Writes processed part to" --> S3_Parts
+        L_Processor -- "9\. Increments completedChunks in" --> DynamoDB
+        L_Processor -- "10\. On completion, invokes..." --> L_Packager
     end
 
-    subgraph "3. Finalization & Output"
+    subgraph "3\. Finalization & Output"
         direction TB
         L_Packager["<fa:fa-bolt> SingleFilePackager<br><i>(Assembler & Cleaner)</i>"]:::lambda
         S3_Individual["<fa:fa-database> PROCESSED_INDIVIDUAL_BUCKET<br><i>(Final processed files)</i>"]:::s3
         S3_Packaged["<fa:fa-database> PACKAGED_RESULTS_BUCKET<br><i>(Zipped archives)</i>"]:::s3
 
-        L_Packager -- "11. Reads all parts for task from" --> S3_Parts
-        L_Packager -- "12. Writes final reassembled file to" --> S3_Individual
-        L_Packager -- "13. Updates task to 'COMPLETED'<br>with presigned URL" --> DynamoDB
-        L_Packager -- "14. Cleans up parts from" --> S3_Parts
-        L_Packager -- "15. Cleans up original file from" --> S3_Upload
+        L_Packager -- "11\. Reads all parts for task from" --> S3_Parts
+        L_Packager -- "12\. Writes final reassembled file to" --> S3_Individual
+        L_Packager -- "13\. Updates task to 'COMPLETED'<br>with presigned URL" --> DynamoDB
+        L_Packager -- "14\. Cleans up parts from" --> S3_Parts
+        L_Packager -- "15\. Cleans up original file from" --> S3_Upload
         
         L_CreateZip -- "Reads individual files from" --> S3_Individual
         L_CreateZip -- "Writes ZIP file to" --> S3_Packaged
         S3_Packaged -- "Returns download URL via" --> L_CreateZip
     end
 
-    subgraph "4. Error & Timeout Handling"
+    subgraph "4\. Error & Timeout Handling"
         direction TB
         SQS_DLQ["<fa:fa-bug> SQS Dead-Letter Queue"]:::sqs
         L_Failure["<fa:fa-bolt> FailureHandler"]:::lambda
